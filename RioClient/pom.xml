@@ -23,7 +23,7 @@
 				<version>8.2.0</version>
 				<configuration>
 					<mainClass>poker.app.MainApp</mainClass>
-					 <bundler>EXE</bundler>
+					<bundler>EXE</bundler>
 				</configuration>
 			</plugin>
 
@@ -59,7 +59,7 @@
 
 		<dependency>
 			<groupId>edu.ud.cis.cisc181</groupId>
-			<artifactId>LuxorBLL</artifactId>
+			<artifactId>RioBLL</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
