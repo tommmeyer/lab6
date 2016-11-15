@@ -20,9 +20,11 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import poker.app.MainApp;
 import pokerBase.Action;
+import pokerBase.GamePlay;
 import pokerBase.Player;
 import pokerBase.Table;
 import pokerEnums.eAction;
+import pokerEnums.eGame;
 import pokerEnums.ePlayerPosition;
 
 public class PokerTableController implements Initializable {
@@ -221,14 +223,29 @@ public class PokerTableController implements Initializable {
 				}
 			}
 		}
-
+	}	
+	
+	
+	public void Handle_GameState(GamePlay HubPokerGame) {
+		//TODO: Deal the cards to the client(s)
 	}
 
 	@FXML
 	void btnStart_Click(ActionEvent event) {
+		//	Code is given...
 		// Start the Game
-		// TODO: Create an instance of Action, Action = StartGame
 		// Send the message to the hub
+		
+		Action act = new Action(eAction.StartGame,mainApp.getPlayer());
+		
+		//	figure out which game is selected in the menu
+		eGame gme = eGame.getGame(Integer.parseInt(mainApp.getRuleName().replace("PokerGame", "")));
+		
+		//	Set the gme in the action
+		act.seteGame(gme);
+		
+		// Send the Action to the Hub
+		mainApp.messageSend(act);
 	}
 
 	@FXML

@@ -270,11 +270,11 @@ public class MainApp extends Application {
 				}
 				else if (message instanceof Table)
 				{
-					System.out.println("Message is table");
-					//TODO: If the message is a Table, run the 
-					//		method Handle_TableState in the 
-					//		pokerController.
 					pokerController.Handle_TableState((Table)message);
+				}
+				else if (message instanceof GamePlay)
+				{
+					pokerController.Handle_GameState((GamePlay)message);
 				}
 				
 			});

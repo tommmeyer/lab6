@@ -51,45 +51,59 @@ public class PokerHub extends Hub {
 
 		if (message instanceof Action) {
 			Player actPlayer = (Player) ((Action) message).getPlayer();
-			if (((Action) message).getAction() == eAction.Sit) {
+			Action act = (Action)message;
+			switch (act.getAction())
+			{
+			case Sit:
 				HubPokerTable.AddPlayerToTable(actPlayer);
 				resetOutput();
-				sendToAll(HubPokerTable);
-			} else if
-
-			(((Action) message).getAction() == eAction.Leave) {
+				sendToAll(HubPokerTable);				
+				break;
+			case Leave:
 				HubPokerTable.RemovePlayerFromTable(actPlayer);
 				resetOutput();
-				sendToAll(HubPokerTable);
-
-			}
-			
-			else if
-
-			(((Action) message).getAction() == eAction.TableState) {
-
+				sendToAll(HubPokerTable);				
+				break;
+			case TableState:
 				resetOutput();
-				sendToAll(HubPokerTable);
+				sendToAll(HubPokerTable);				
+				break;
+			case StartGame:
+				//	TODO: Set HubGamePlay = new instance of GamePlay
+				
+				Rule rle = new Rule(act.geteGame());
+				
+				//	TODO: - Finish this code 
+				//			HubGamePlay = new GamePlay(<parm>,<parm>,<parm>);
+				
+				
+				//	DO NOT BREAK... let it fall through to Draw so it will draw
+				//	the first cards of the game
+				
+				//	TODO: Add the players to the game based on who's sitting at the table
+				//			Call 'setGamePlayers' in GamePlay
+				
+				//	TODO: Pick a random player to be the dealer (between players playing)
+				
+				//	TODO: Set the deck in HubGamePlay based on game's rule set
+				
+				//	TODO: 
+			case Draw:
+				
+				//	TODO: Draw cards based on next in hmCardDraw
+				//			You might have to draw two cards, one card, three cards
+				
+				//			You might have to add cards to player(s) hands, community
 
-			}
-			// TODO: If the Action = StartGame, start the game...
-			// Create an instance of GamePlay, set all the parameters
-
-			// TODO: If Action = Sit, add the player to the table
-
-			// TODO: If Action = Leave, remove the player from the table
-
-			// TODO: If Action = Sit or Leave, send the Table
-			// back to the client
-
-			// TODO: If Action = GameState, send HubGamePlay
-			// back to the client
+				//	TODO: Update eDrawCountLast in GamePlay.  This attribute will 
+				//		tell the client what card(s) need to be dealt to which players.
+				
+				resetOutput();
+				sendToAll(HubGamePlay);	
+				break;
+			}			
 		}
 
-		/*
-		 * System.out.println("Message Received by Hub"); resetOutput();
-		 * sendToAll("Sending Message Back to Client");
-		 */
 	}
 
 }
