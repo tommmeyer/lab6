@@ -82,7 +82,7 @@ public class PokerHub extends Hub {
 				CardDraw cardDraw = HubGamePlay.getRule().GetDrawCard(drawCount.next());
 				HubGamePlay.setCardDraw(cardDraw);
 				if (cardDraw.getCardDestination() == eCardDestination.Community) {
-					int cardsToDeal = cardDraw.getCardCount().ordinal();
+					int cardsToDeal = cardDraw.getCardCount().ordinal() + 1;
 					for (int cardDeal = 0; cardDeal < cardsToDeal; cardDeal++) {
 
 						try {
