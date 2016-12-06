@@ -52,7 +52,7 @@ public class Rule implements Serializable {
 			case FiveStudOneJoker: {
 				this.MaxNumberOfPlayers = 4;
 				this.PlayerNumberOfCards = 5;
-				this.NumberOfJokers = 21;
+				this.NumberOfJokers = 1;
 				this.PlayerCardsMin = 5;
 				this.PlayerCardsMax = 5;			
 				this.CommunityCardsMin = 0;
@@ -103,7 +103,7 @@ public class Rule implements Serializable {
 				this.PlayerCardsMin = 2;
 				this.PlayerCardsMax = 2;			
 				this.CommunityCardsMin = 3;
-				this.CommunityCardsMax = 5;
+				this.CommunityCardsMax = 3;
 				this.PossibleHandCombinations = 60;
 				this.hmCardDraw.put(eDrawCount.FIRST,new CardDraw(eCardCount.Two,eCardDestination.Player,eCardVisibility.VisibleMe));
 				this.hmCardDraw.put(eDrawCount.SECOND,new CardDraw(eCardCount.Two,eCardDestination.Player,eCardVisibility.VisibleMe));

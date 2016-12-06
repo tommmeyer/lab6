@@ -12,11 +12,11 @@ public class CardDraw implements Serializable {
 	private eCardCount CardCount;
 	private eCardDestination CardDestination;
 	private eCardVisibility CardVisibility;
-	public CardDraw(eCardCount cardCount, eCardDestination cardDestination, eCardVisibility cardVisiblity) {
+	public CardDraw(eCardCount cardCount, eCardDestination cardDestination, eCardVisibility cardVisibility) {
 		super();
 		CardCount = cardCount;
 		CardDestination = cardDestination;
-		CardVisibility = CardVisibility;
+		CardVisibility = cardVisibility;
 	}
 	public eCardCount getCardCount() {
 		return CardCount;

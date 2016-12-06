@@ -1,10 +1,12 @@
 package pokerBase;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.UUID;
 
 import pokerEnums.eCardNo;
 import pokerEnums.eHandExceptionType;
@@ -13,14 +15,16 @@ import pokerEnums.eRank;
 import pokerEnums.eSuit;
 import exceptions.HandException;
 
-public class Hand {
+public class Hand implements Serializable{
+	
+	
 
 	private ArrayList<Card> CardsInHand = new ArrayList<Card>();
 	private boolean bScored;
 	private HandScore hs;
 	private ArrayList<Hand> ExplodedHands = new ArrayList<Hand>();
 
-	 ArrayList<Card> getCardsInHand() {
+	public ArrayList<Card> getCardsInHand() {
 		return CardsInHand;
 	}
 

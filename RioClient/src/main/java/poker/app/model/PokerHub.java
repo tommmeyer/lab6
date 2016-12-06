@@ -31,6 +31,8 @@ public class PokerHub extends Hub {
 	private GamePlay HubGamePlay;
 	private int iDealNbr = 0;
 	private eGameState eGameState;
+	private eDrawCount drawCount;
+	private Card nextCard;
 
 	public PokerHub(int port) throws IOException {
 		super(port);
@@ -38,7 +40,7 @@ public class PokerHub extends Hub {
 
 	protected void playerConnected(int playerID) {
 
-		if (playerID == 2) {
+		if (playerID == 100) {
 			shutdownServerSocket();
 		}
 	}
@@ -47,61 +49,70 @@ public class PokerHub extends Hub {
 		shutDownHub();
 	}
 
+
 	protected void messageReceived(int ClientID, Object message) {
 
 		if (message instanceof Action) {
 			Player actPlayer = (Player) ((Action) message).getPlayer();
-			Action act = (Action)message;
-			switch (act.getAction())
-			{
+			Action act = (Action) message;
+			switch (act.getAction()) {
 			case Sit:
 				HubPokerTable.AddPlayerToTable(actPlayer);
 				resetOutput();
-				sendToAll(HubPokerTable);				
+				sendToAll(HubPokerTable);
 				break;
 			case Leave:
 				HubPokerTable.RemovePlayerFromTable(actPlayer);
 				resetOutput();
-				sendToAll(HubPokerTable);				
+				sendToAll(HubPokerTable);
 				break;
 			case TableState:
 				resetOutput();
-				sendToAll(HubPokerTable);				
+				sendToAll(HubPokerTable);
 				break;
 			case StartGame:
-				//	TODO: Set HubGamePlay = new instance of GamePlay
-				
 				Rule rle = new Rule(act.geteGame());
-				
-				//	TODO: - Finish this code 
-				//			HubGamePlay = new GamePlay(<parm>,<parm>,<parm>);
-				
-				
-				//	DO NOT BREAK... let it fall through to Draw so it will draw
-				//	the first cards of the game
-				
-				//	TODO: Add the players to the game based on who's sitting at the table
-				//			Call 'setGamePlayers' in GamePlay
-				
-				//	TODO: Pick a random player to be the dealer (between players playing)
-				
-				//	TODO: Set the deck in HubGamePlay based on game's rule set
-				
-				//	TODO: 
-			case Draw:
-				
-				//	TODO: Draw cards based on next in hmCardDraw
-				//			You might have to draw two cards, one card, three cards
-				
-				//			You might have to add cards to player(s) hands, community
-
-				//	TODO: Update eDrawCountLast in GamePlay.  This attribute will 
-				//		tell the client what card(s) need to be dealt to which players.
-				
+				HubGamePlay = new GamePlay(rle, HubPokerTable.PickRandomPlayerAtTable().getPlayerID());
+				HubGamePlay.setGamePlayers(HubPokerTable.getHashPlayers());
+				HubGamePlay.setiActOrder(HubGamePlay.GetOrder(HubGamePlay.getGamePlayer(HubGamePlay.getGameDealer()).getiPlayerPosition()));
+				drawCount = eDrawCount.NONE;
 				resetOutput();
-				sendToAll(HubGamePlay);	
+				sendToAll(HubGamePlay);
+			case Draw:
+				CardDraw cardDraw = HubGamePlay.getRule().GetDrawCard(drawCount.next());
+				HubGamePlay.setCardDraw(cardDraw);
+				if (cardDraw.getCardDestination() == eCardDestination.Community) {
+					int cardsToDeal = cardDraw.getCardCount().ordinal();
+					for (int cardDeal = 0; cardDeal < cardsToDeal; cardDeal++) {
+
+						try {
+							nextCard = HubGamePlay.getGameDeck().Draw();
+						} catch (DeckException e) {
+							System.out.println("Deck out of Cards");
+						}
+						HubGamePlay.getCommunityCards().add(nextCard);
+					}
+				} else if (cardDraw.getCardDestination() == eCardDestination.Player) {
+					int cardsToDeal = cardDraw.getCardCount().ordinal()+1;
+					for (int cardDeal = 0; cardDeal < cardsToDeal; cardDeal++) {
+						for (int playerPosition : HubGamePlay.getiActOrder()) {
+								Player player = HubGamePlay.getPlayerByPosition(playerPosition);
+								if (player != null) {
+								try {
+									nextCard = HubGamePlay.getGameDeck().Draw();
+								} catch (DeckException e) {
+									System.out.println("Deck out of Cards");
+								}
+								HubGamePlay.getPlayerHand(player).AddToCardsInHand(nextCard);
+							}
+						}
+					}
+				}
+				HubGamePlay.seteDrawCountLast(drawCount);
+				resetOutput();
+				sendToAll(HubGamePlay);
 				break;
-			}			
+			}
 		}
 
 	}

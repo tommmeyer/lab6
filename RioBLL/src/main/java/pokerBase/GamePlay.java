@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
+import pokerEnums.eGameState;
 
 import pokerEnums.eDrawCount;
 
@@ -19,6 +20,7 @@ public class GamePlay implements Serializable   {
 	
 	private HashMap<UUID, Hand> hmPlayerHand = new HashMap<UUID, Hand>();
 	
+	private ArrayList<Card> communityCards = new ArrayList<Card>();
 	private Hand GameCommonHand = new Hand();
 	private Rule rle;
 	private Deck GameDeck = null;
@@ -26,12 +28,25 @@ public class GamePlay implements Serializable   {
 	private int[] iActOrder = null;
 	private Player PlayerNextToAct = null;
 	private eDrawCount eDrawCountLast;
+	private eGameState eGameState;
+	private CardDraw CardDraw;
 	
 	public GamePlay(Rule rle, UUID GameDealerID)
 	{
 		this.setGameID(UUID.randomUUID());
-		this.setGameDealer(GameDealer);
+		this.setGameDealer(GameDealerID);
 		this.rle = rle;
+		this.setGameDeck(new Deck(rle.GetNumberOfJokers(), rle.GetWildCards()));
+		seteDrawCountLast(eDrawCount.FIRST);
+		
+		if (rle.GetCommunityCardsCount()>0){
+			communityCards = new ArrayList<Card>();
+			
+		}
+	}
+	
+	public ArrayList<Card> getCommunityCards(){
+		return this.communityCards;
 	}
 	
 	public static void StateOfGamePlay(GamePlay g)
@@ -218,6 +233,13 @@ public class GamePlay implements Serializable   {
 		
 		return pl;
 	}
+	public eGameState geteGameState() {
+		return eGameState;
+	}
+
+	public void seteGameState(eGameState eGameState) {
+		this.eGameState = eGameState;
+}
 	/*
 	public GamePlayPlayerHand FindCommonHand(GamePlay gme)
 	{
@@ -232,7 +254,14 @@ public class GamePlay implements Serializable   {
 		return GPCH;
 	}
 	*/
-	
+
+	public void setCardDraw(CardDraw cardDraw) {
+		this.CardDraw = cardDraw;
+		
+	}
+	public CardDraw getCardDraw(){
+		return this.CardDraw;
+	}
 /*	public GamePlayPlayerHand FindPlayerGame(GamePlay gme, Player p)
 	{
 		GamePlayPlayerHand GPPHReturn = null;

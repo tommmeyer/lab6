@@ -17,6 +17,10 @@ public enum eDrawCount {
 		return DrawNo;
 	}
 	
+	public eDrawCount next(){
+		return this.values()[ordinal()+1];
+	}
+	
 	private static Map<Integer, eDrawCount> map = new HashMap<Integer, eDrawCount>();
 
 	static {

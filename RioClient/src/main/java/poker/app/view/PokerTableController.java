@@ -1,9 +1,12 @@
 package poker.app.view;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
@@ -20,10 +23,14 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import poker.app.MainApp;
 import pokerBase.Action;
+import pokerBase.Card;
 import pokerBase.GamePlay;
+import pokerBase.Hand;
 import pokerBase.Player;
 import pokerBase.Table;
 import pokerEnums.eAction;
+import pokerEnums.eCardVisibility;
+import pokerEnums.eDrawCount;
 import pokerEnums.eGame;
 import pokerEnums.ePlayerPosition;
 
@@ -92,6 +99,8 @@ public class PokerTableController implements Initializable {
 	private HBox hboxP3Cards;
 	@FXML
 	private HBox hboxP4Cards;
+	@FXML
+	private HBox hboxCommunity;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -185,6 +194,22 @@ public class PokerTableController implements Initializable {
 
 	}
 
+	private HBox getHBox(int iPosition) {
+		switch (iPosition) {
+		case 1:
+			return hboxP1Cards;
+		case 2:
+			return hboxP2Cards;
+		case 3:
+			return hboxP3Cards;
+		case 4:
+			return hboxP4Cards;
+		default:
+			return null;
+		}
+
+	}
+
 	public void Handle_TableState(Table HubPokerTable) {
 
 		lblPlayerPos1.setText("");
@@ -207,43 +232,77 @@ public class PokerTableController implements Initializable {
 			}
 		}
 
-		//	Note: Players have been seated, set the Sit/Leave text
-		//	based on players already seated.
-		
+		// Note: Players have been seated, set the Sit/Leave text
+		// based on players already seated.
+
 		for (int a = 1; a < 5; a++) {
 
 			if (getPlayerLabel(a).getText() == "") {
 				if (bSeated) {
 					getSitLeave(a).setVisible(false);
-				}
-				else
-				{
+				} else {
 					getSitLeave(a).setVisible(true);
 					getSitLeave(a).setText("Sit");
 				}
 			}
 		}
-	}	
-	
-	
+	}
+
 	public void Handle_GameState(GamePlay HubPokerGame) {
-		//TODO: Deal the cards to the client(s)
+
+		hboxCommunity.getChildren().clear();
+		for (int position = 1; position < 5; position++) {
+			getHBox(position).getChildren().clear();
+		}
+
+		ArrayList<Card> communityCards = HubPokerGame.getCommunityCards();
+		for (Card card : communityCards) {
+			ImageView nextCard = BuildImage(card.getiCardNbr());
+			hboxCommunity.getChildren().add(nextCard);
+		}
+		HashMap<UUID, Player> HashPlayers = HubPokerGame.getGamePlayers();
+		for (Player player : HashPlayers.values()) {
+			ArrayList<Card> playerHand = HubPokerGame.getPlayerHand(player).getCardsInHand();
+			for (Card card : playerHand) {
+				if (player.getPlayerID().equals(mainApp.getPlayer().getPlayerID()) || HubPokerGame.getCardDraw().getCardVisibility()==eCardVisibility.VisibleEveryone) {
+					ImageView nextCard = BuildImage(card.getiCardNbr());
+					getHBox(player.getiPlayerPosition()).getChildren().add(nextCard);
+				}
+				else{
+					ImageView nextCard = BuildImage(0);
+					getHBox(player.getiPlayerPosition()).getChildren().add(nextCard);
+				}
+			}
+
+		}
+
+	}
+
+	private ImageView BuildImage(int CardNbr) {
+		String imageName;
+		if (CardNbr == 0) {
+			imageName = "/img/b2fv.png";
+		} else {
+			imageName = "/img/" + CardNbr + ".png";
+		}
+		ImageView image = new ImageView(new Image(getClass().getResourceAsStream(imageName), 75, 75, true, true));
+		return image;
 	}
 
 	@FXML
 	void btnStart_Click(ActionEvent event) {
-		//	Code is given...
+		// Code is given...
 		// Start the Game
 		// Send the message to the hub
-		
-		Action act = new Action(eAction.StartGame,mainApp.getPlayer());
-		
-		//	figure out which game is selected in the menu
+
+		Action act = new Action(eAction.StartGame, mainApp.getPlayer());
+
+		// figure out which game is selected in the menu
 		eGame gme = eGame.getGame(Integer.parseInt(mainApp.getRuleName().replace("PokerGame", "")));
-		
-		//	Set the gme in the action
+
+		// Set the gme in the action
 		act.seteGame(gme);
-		
+
 		// Send the Action to the Hub
 		mainApp.messageSend(act);
 	}
